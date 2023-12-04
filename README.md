@@ -31,3 +31,4 @@ FRONT приложение отправляет credentials в теле запр
 
 ## Ссылка на Frontend
 https://github.com/netology-code/jd-homeworks/tree/8f07696982d452908148330456fda39abf01b0cf/diploma/netology-diplom-frontend
+
