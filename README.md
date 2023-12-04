@@ -28,3 +28,6 @@ FRONT приложение отправляет credentials в теле запр
 В случае успешной аутентификации генерируется токен, которые возвращается на FRONT в ответе с заголовком `auth-token`
 Все дальнешие запросы FRONT делает с этим токеном в заголовке `auth-token`.
 При выходе из приложения вызывается метод BACKEND /logout, который удаляет токен из TokenStore и все дальнейшие запросы с этим токеном не действительны.
+
+## Ссылка на Frontend
+https://github.com/netology-code/jd-homeworks/tree/8f07696982d452908148330456fda39abf01b0cf/diploma/netology-diplom-frontend
