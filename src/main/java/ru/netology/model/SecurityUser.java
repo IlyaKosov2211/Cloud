@@ -1,5 +1,6 @@
 package ru.netology.model;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.netology.entities.User;
@@ -7,12 +8,9 @@ import ru.netology.entities.User;
 import java.util.Collection;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class SecurityUser implements UserDetails {
     private final User user;
-
-    public SecurityUser(User user) {
-        this.user = user;
-    }
 
     @Override
     public String getUsername() {

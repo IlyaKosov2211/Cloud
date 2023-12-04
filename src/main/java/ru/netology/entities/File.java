@@ -21,12 +21,4 @@ public class File {
     @Lob
     private byte[] content;
     private String owner;
-
-    public File(String filename, String type, Long size, byte[] content, String owner) {
-        this.filename = filename;
-        this.type = type;
-        this.size = size;
-        this.content = content;
-        this.owner = owner;
-    }
 }

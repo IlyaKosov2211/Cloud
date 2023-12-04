@@ -1,5 +1,6 @@
 package ru.netology.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,16 +14,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class StorageFileService {
     private final StorageFileRepository storageFileRepository;
     private final JwtTokenUtil jwtTokenUtil;
-
-    public StorageFileService(StorageFileRepository storageFileRepository, JwtTokenUtil jwtTokenUtil) {
-        this.storageFileRepository = storageFileRepository;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
 
     public List<FileResponse> getFiles(String authToken, int limit) {
         String owner = jwtTokenUtil.getUsernameFromToken(authToken.substring(7));
@@ -34,7 +31,7 @@ public class StorageFileService {
 
     public void uploadFile(String authToken, String filename, MultipartFile file) throws IOException {
         String owner = jwtTokenUtil.getUsernameFromToken(authToken.substring(7));
-        storageFileRepository.save(new File(filename, file.getContentType(), file.getSize(), file.getBytes(), owner));
+        storageFileRepository.save(new File());
     }
 
     public void deleteFile(String authToken, String filename) {

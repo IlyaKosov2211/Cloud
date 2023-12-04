@@ -1,7 +1,9 @@
 package ru.netology.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -10,29 +12,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.netology.jwt.JwtAuthenticationEntryPoint;
 import ru.netology.jwt.JwtRequestFilter;
 import ru.netology.service.UserService;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class CloudConfig {
     private final UserService userDetailsService;
-    private final JwtAuthenticationEntryPoint jwtEntryPoint;
-    public final JwtRequestFilter jwtTokenFilter;
-
-    public CloudConfig(UserService userDetailsService, JwtAuthenticationEntryPoint jwtEntryPoint, JwtRequestFilter jwtTokenFilter) {
-        this.userDetailsService = userDetailsService;
-        this.jwtEntryPoint = jwtEntryPoint;
-        this.jwtTokenFilter = jwtTokenFilter;
-    }
+    public final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    public final JwtRequestFilter jwtRequestFilter;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -53,39 +46,26 @@ public class CloudConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable();
-        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         http.authenticationProvider(authenticationProvider());
+        http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
         http
-                .authorizeRequests().mvcMatchers("/login").permitAll()
-                .anyRequest().authenticated()
-
+                .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .and()
-                .logout()
-                .deleteCookies("JSESSIONID")
-                .clearAuthentication(true)
+                .authorizeRequests().antMatchers("/login").permitAll();
 
-                .and()
+        http
                 .exceptionHandling()
-                .authenticationEntryPoint(jwtEntryPoint)
-
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();
     }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080/"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowCredentials(true);
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 }
+

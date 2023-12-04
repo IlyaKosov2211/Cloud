@@ -1,5 +1,6 @@
 package ru.netology.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,15 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
     private final Map<String, String> tokenStore = new HashMap<>();
-
-    public AuthenticationService(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-    }
 
     public String loginUser(AuthenticationRequest authRequest) {
         try {
